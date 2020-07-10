@@ -3,10 +3,9 @@ package aka_npou.mBot.db.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,7 +16,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private long idChat;
+    private long chatId;
 
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<Event> events = new ArrayList<>();
 
 }
