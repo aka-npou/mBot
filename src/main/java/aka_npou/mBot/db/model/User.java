@@ -16,7 +16,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private long chatId;
+    private int chatId;
 
     @OneToMany
     @JoinColumn(name = "user_id")

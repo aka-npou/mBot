@@ -7,5 +7,5 @@ import aka_npou.mBot.db.model.User;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
-
+    User findByChatId(Integer id);
 }

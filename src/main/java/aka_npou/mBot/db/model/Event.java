@@ -18,4 +18,8 @@ public class Event {
     @Column(columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime date;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+
 }

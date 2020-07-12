@@ -1,17 +1,15 @@
 package aka_npou.mBot.bot;
 
+import aka_npou.mBot.bot.menu.BotState;
+import aka_npou.mBot.bot.menu.Menu;
+import aka_npou.mBot.bot.menu.MenuFactory;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -19,52 +17,56 @@ public class MBot extends TelegramWebhookBot {
     private String webHookPath;
     private String botUserName;
     private String botToken;
+    @Autowired
+    private Cache cache;
+    @Autowired
+    private MenuFactory menuFactory;
 
     @Override
     public String getBotToken() {
-        return null;
+        return botToken;
     }
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        System.err.println(update.getMessage().getText());
+        if (!update.getMessage().hasText()) {
+            SendMessage message = new SendMessage();
+            message.setChatId(update.getMessage().getChatId());
+            message.setText("понимаю только текст");
+            return message;
+        }
+
+        Menu menu = getMenu(update);
+        return getMessage(menu, update);
+
+    }
+
+    private BotApiMethod<?> getMessage(Menu menu, Update update) {
         SendMessage message = new SendMessage();
         message.setChatId(update.getMessage().getChatId());
-        message.setText("hello, " + update.getMessage().getChat().getUserName());
 
-        final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        replyKeyboardMarkup.setSelective(true);
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboard(false);
+        BotState newBotState = menu.Execute(update, message);
 
-        List<KeyboardRow> keyboard = new ArrayList<>();
+        cache.setState(update.getMessage().getFrom().getId(), newBotState);
 
-        KeyboardRow row1 = new KeyboardRow();
-        KeyboardRow row2 = new KeyboardRow();
-        KeyboardRow row3 = new KeyboardRow();
-        row1.add(new KeyboardButton("ввести дату"));
-        row2.add(new KeyboardButton("график"));
-        row3.add(new KeyboardButton("редактирование"));
-        keyboard.add(row1);
-        keyboard.add(row2);
-        keyboard.add(row3);
-        replyKeyboardMarkup.setKeyboard(keyboard);
-
-        //message.enableMarkdown(true);
-        message.setReplyMarkup(replyKeyboardMarkup);
-
-        System.err.println(message.toString());
-
+        getMenu(update).getBotApiMethod(update, message);
         return message;
+    }
+
+    private Menu getMenu(Update update) {
+        BotState state = cache.getState(update.getMessage().getFrom().getId());
+
+        return menuFactory.getMenu(state);
     }
 
     @Override
     public String getBotUsername() {
-        return null;
+        return botUserName;
     }
 
     @Override
     public String getBotPath() {
-        return null;
+        return webHookPath;
     }
+
 }
