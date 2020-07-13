@@ -26,40 +26,49 @@ public class BotService {
             eventRepository.save(event);
     }
 
-    public List<LocalDateTime> getEvents(Integer id) {
+    public List<Event> getLast12Events(Integer id) {
         User user = getUser(id);
 
-        List<LocalDateTime> ldtList = eventRepository.findDistinctTop12ByUserId(user.getId());
+        List<Event> ldtList = eventRepository.findTop12ByUserIdOrderByDateDesc(user.getId());
 
         return ldtList;
     }
 
-    public String getLast12Events(Integer id) {
+    public String getEvents(Integer id) {
 
-        List<LocalDateTime> ldtList = getEvents(id);
+        List<Event> ldtList = getLast12Events(id);
 
         StringBuilder sb = new StringBuilder();
 
+        int allDays = 0;
+        int count = 0;
+
         LocalDateTime lastDate = null;
-        for (LocalDateTime dateTime:ldtList) {
+        for (Event event:ldtList) {
             if (lastDate != null) {
                 int days = (int) ((lastDate.atZone(ZoneId.systemDefault()).toEpochSecond()
-                                  - dateTime.atZone(ZoneId.systemDefault()).toEpochSecond())
+                                  - event.getDate().atZone(ZoneId.systemDefault()).toEpochSecond())
                                   / 60 / 60 / 24);
                 sb.append("\n").append(String.format("%dд", days));
+
+                allDays += days;
+                count++;
+
             }
 
             sb.append("\n")
                     .append(String.format("%02d.%02d.%d",
-                            dateTime.getDayOfMonth(),
-                            dateTime.getMonthValue(),
-                            dateTime.getYear()));
+                            event.getDate().getDayOfMonth(),
+                            event.getDate().getMonthValue(),
+                            event.getDate().getYear()));
 
-            lastDate = dateTime;
+            lastDate = event.getDate();
         }
 
         if (sb.length() == 0) {
             sb.append("пусто");
+        } else {
+            sb.append("\n").append("средний цикл: ").append(allDays / count).append("д");
         }
 
         return sb.toString();

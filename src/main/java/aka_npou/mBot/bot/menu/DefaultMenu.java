@@ -83,7 +83,7 @@ public class DefaultMenu implements Menu{
                 break;
             }
             case ("график"): {
-                String schedule = botService.getLast12Events(update.getMessage().getFrom().getId());
+                String schedule = botService.getEvents(update.getMessage().getFrom().getId());
                 message.setText("график\n" + schedule);
                 botState = BotState.SCHEDULE_MENU;
                 break;
