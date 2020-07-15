@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BotService {
@@ -29,7 +31,7 @@ public class BotService {
     public List<Event> getLast12Events(Integer id) {
         User user = getUser(id);
 
-        List<Event> ldtList = eventRepository.findTop12ByUserIdOrderByDateDesc(user.getId());
+        List<Event> ldtList = eventRepository.findTop12ByUserIdAndEnableOrderByDateDesc(user.getId(), true);
 
         return ldtList;
     }
@@ -88,5 +90,64 @@ public class BotService {
         }
 
         return user;
+    }
+
+    public List<Event> getShiftEvents(Integer id, int shift) {
+        User user = getUser(id);
+
+        List<Event> ldtList = eventRepository.getPart(user.getId());
+
+        List<Event> ldtListPart = new ArrayList<>();
+
+        int elementsInPart = 6;
+        int currentElementInPart = 0;
+        int currentShift = 0;
+
+        for (Event event : ldtList) {
+            if (currentShift == shift) {
+                ldtListPart.add(event);
+            }
+            currentElementInPart++;
+            if (currentElementInPart >= elementsInPart) {
+                currentElementInPart = 0;
+                currentShift++;
+            }
+        }
+
+        return ldtListPart;
+    }
+
+    public String getEditEvents(Integer id, int shift, Map<Integer, Long> map) {
+        List<Event> ldtList = getShiftEvents(id, shift);
+
+        StringBuilder sb = new StringBuilder();
+
+        map.clear();
+
+        int n = 1;
+        for (Event event:ldtList) {
+            sb.append("\n")
+                    .append(String.format("/%d %02d.%02d.%d",
+                            n,
+                            event.getDate().getDayOfMonth(),
+                            event.getDate().getMonthValue(),
+                            event.getDate().getYear()));
+
+            map.put(n, event.getId());
+
+            n++;
+
+        }
+
+        if (sb.length() == 0) {
+            sb.append("пусто");
+        }
+
+        return sb.toString();
+    }
+
+    public void deleteEvent(long eventId) {
+        System.err.println("eventId " + eventId);
+        eventRepository.disableEvent(eventId);
     }
 }

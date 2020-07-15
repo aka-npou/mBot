@@ -89,7 +89,8 @@ public class DefaultMenu implements Menu{
                 break;
             }
             case ("редактировать"): {
-                message.setText("редактирование");
+                /*String elements = botService.getEditEvents(update.getMessage().getFrom().getId(), 0);
+                message.setText(elements);*/
                 botState = BotState.EDIT_MENU;
                 break;
             }

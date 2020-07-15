@@ -80,8 +80,8 @@ public class DateMenu implements Menu{
                     try {
                         String[] sDate = text.split("\\.");
                         LocalDateTime date = LocalDateTime.now()
-                                                            .withDayOfMonth(Integer.parseInt(sDate[0]))
-                                                            .withMonth(Integer.parseInt(sDate[1]));
+                                .withDayOfMonth(Integer.parseInt(sDate[0]))
+                                .withMonth(Integer.parseInt(sDate[1]));
 
                         User user = botService.getUser(update.getMessage().getFrom().getId());
 
@@ -91,10 +91,29 @@ public class DateMenu implements Menu{
                         event.setDate(date);
                         botService.addEvent(event);
 
+                        message.setText("записано событие");
+
                     } catch (Exception e) {
                         message.setText("не распознано");
                     }
-                    message.setText("записано событие");
+                } else if (text.matches("[0-9][0-9].[0-9][0-9].[12][0-9][0-9][0-9]")) {
+                    try {
+                        String[] sDate = text.split("\\.");
+                        LocalDateTime date = LocalDateTime.of(Integer.parseInt(sDate[2]), Integer.parseInt(sDate[1]), Integer.parseInt(sDate[0]), 0, 0, 0);
+
+                        User user = botService.getUser(update.getMessage().getFrom().getId());
+
+                        Event event = new Event();
+                        event.setUser(user);
+
+                        event.setDate(date);
+                        botService.addEvent(event);
+
+                        message.setText("записано событие");
+
+                    } catch (Exception e) {
+                        message.setText("не распознано");
+                    }
                 } else {
                     message.setText("не распознано");
                 }

@@ -2,7 +2,6 @@ package aka_npou.mBot.bot.menu;
 
 import aka_npou.mBot.db.service.BotService;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -11,28 +10,25 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
-public class EditMenu implements Menu {
+public class EditEventMenu implements Menu{
     @Getter
-    private final BotState botState = BotState.EDIT_MENU;
-    private Map<Integer, Long> map = new HashMap<>();
+    private final BotState botState = BotState.EDIT_EVENT_MENU;
     private final BotService botService;
-    @Getter
-    @Setter
-    private int shift;
+    private long eventId;
 
-    public EditMenu(BotService botService) {
+    public EditEventMenu(BotService botService) {
         this.botService = botService;
     }
 
     @Override
     public SendMessage getBotApiMethod(Update update, SendMessage message) {
-        String elements = botService.getEditEvents(update.getMessage().getFrom().getId(), shift, map);
-        message.setText(elements);
+        eventId = Long.parseLong(message.getText());
+        System.err.println("eventId " + eventId);
+
+        message.setText("выберите действие");
 
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setSelective(true);
@@ -43,8 +39,8 @@ public class EditMenu implements Menu {
 
         KeyboardRow row1 = new KeyboardRow();
         KeyboardRow row2 = new KeyboardRow();
-        row1.add(new KeyboardButton("раньше"));
-        row1.add(new KeyboardButton("позже"));
+        row1.add(new KeyboardButton("удалить"));
+        //row1.add(new KeyboardButton("изменить"));
         row2.add(new KeyboardButton("назад"));
 
 
@@ -67,27 +63,13 @@ public class EditMenu implements Menu {
                 message.setText("выберите действие");
                 break;
             }
-            case ("раньше"): {
-                botState = BotState.EDIT_MENU;
-                shift++;
-                break;
-            }
-            case ("позже"): {
-                botState = BotState.EDIT_MENU;
-                shift--;
+            case ("удалить"): {
+                botService.deleteEvent(eventId);
+                message.setText("выберите действие");
                 break;
             }
             default: {
-                if (text.matches("/[0-9]+")) {
-                    try {
-                        message.setText(String.valueOf(map.get(Integer.parseInt(text.replaceAll("/","")))));
-                        botState = BotState.EDIT_EVENT_MENU;
-                    } catch (Exception e) {
-                        message.setText("не распознано");
-                    }
-                } else {
-                    message.setText("не распознано");
-                }
+                message.setText("не распознано");
             }
         }
 

@@ -1,6 +1,7 @@
 package aka_npou.mBot.bot;
 
 import aka_npou.mBot.bot.menu.BotState;
+import aka_npou.mBot.bot.menu.EditMenu;
 import aka_npou.mBot.bot.menu.Menu;
 import aka_npou.mBot.bot.menu.MenuFactory;
 import lombok.Getter;
@@ -36,7 +37,7 @@ public class MBot extends TelegramWebhookBot {
             return message;
         }
 
-        Menu menu = getMenu(update);
+        Menu menu = getMenu(getState(update));
         return getMessage(menu, update);
 
     }
@@ -49,13 +50,20 @@ public class MBot extends TelegramWebhookBot {
 
         cache.setState(update.getMessage().getFrom().getId(), newBotState);
 
-        getMenu(update).getBotApiMethod(update, message);
+        getMenu(getState(update)).getBotApiMethod(update, message);
+        
+        if (getState(update) != BotState.EDIT_MENU) {
+            EditMenu editMenu = (EditMenu)getMenu(BotState.EDIT_MENU);
+            editMenu.setShift(0);
+        }
         return message;
     }
 
-    private Menu getMenu(Update update) {
-        BotState state = cache.getState(update.getMessage().getFrom().getId());
+    private BotState getState(Update update) {
+        return cache.getState(update.getMessage().getFrom().getId());
+    }
 
+    private Menu getMenu(BotState state) {
         return menuFactory.getMenu(state);
     }
 
