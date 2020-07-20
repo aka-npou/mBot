@@ -69,7 +69,9 @@ public class BotService {
         if (sb.length() == 0) {
             sb.append("пусто");
         } else {
-            sb.append("\n").append("средний цикл: ").append(allDays / count).append("д");
+            if (count != 0) {
+                sb.append("\n").append("средний цикл: ").append(allDays / count).append("д");
+            }
         }
 
         return sb.toString();
