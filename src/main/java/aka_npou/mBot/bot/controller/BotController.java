@@ -26,4 +26,9 @@ public class BotController {
     public void get() {
 
     }
+
+    @GetMapping(path = "/test")
+    public String getTest() {
+        return "test ok";
+    }
 }
