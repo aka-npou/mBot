@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(schema = "m_bot_db", name = "person")
 @Getter
 @Setter
 public class User {

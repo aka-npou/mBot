@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(schema = "m_bot_db", name = "event")
 @Getter
 @Setter
 public class Event {
