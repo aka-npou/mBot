@@ -14,10 +14,10 @@ import java.net.URL;
 @Getter
 @Setter
 public class CheckService {
-    @Value("${pingtask.url}")
+    @Value("https://www.google.com")
     private String url;
 
-    @Scheduled(fixedRateString = "${pingtask.period}")
+    @Scheduled(fixedRateString = "1200000")
     public void pingMe() {
         try {
             URL url = new URL(getUrl());
