@@ -23,6 +23,8 @@ public class CheckService {
             URL url = new URL(getUrl());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
+            System.err.println("ping");
+            System.err.printf("\n %s %s", url.getHost(),  connection.getResponseCode());
             connection.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
