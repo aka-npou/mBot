@@ -5,5 +5,5 @@ public enum BotState {
     DATE_MENU,
     EDIT_MENU,
     EDIT_EVENT_MENU,
-    SCHEDULE_MENU;
+    SCHEDULE_MENU
 }
