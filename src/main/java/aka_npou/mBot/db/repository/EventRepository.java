@@ -14,17 +14,16 @@ import java.util.List;
 public interface EventRepository extends CrudRepository<Event, Long> {
     List<Event> findAllByUserId(Long id);
 
-    @Query("select e from Event e where e.date = ?1 and e.enable = true")
-    List<Event> findAllByDate(LocalDateTime date);
+    List<Event> findAllByDateAndActiveTrue(LocalDateTime date);
 
-    List<Event> findTop12ByUserIdAndEnableOrderByDateDesc(Long id, boolean b);
+    List<Event> findTop12ByUserIdAndActiveTrueOrderByDateDesc(Long id);
 
-    @Query("select e from Event e where e.user.id = ?1 and e.enable = true order by e.date desc")
+    @Query("select e from Event e where e.user.id = ?1 and e.active = true order by e.date desc")
     List<Event> getPart(Long id);
 
     @Modifying
     @Transactional
-    @Query("update Event e set e.enable = false where e.id = ?1")
+    @Query("update Event e set e.active = false where e.id = ?1")
     int disableEvent(Long id);
 
 }

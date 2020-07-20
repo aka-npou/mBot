@@ -24,16 +24,15 @@ public class BotService {
 
     public void addEvent(Event event) {
         event.setDate(event.getDate().withHour(0).withMinute(0).withSecond(0).withNano(0));
-        if (eventRepository.findAllByDate(event.getDate()).size() == 0)
+        if (eventRepository.findAllByDateAndActiveTrue(event.getDate()).size() == 0)
             eventRepository.save(event);
     }
 
     public List<Event> getLast12Events(Integer id) {
         User user = getUser(id);
 
-        List<Event> ldtList = eventRepository.findTop12ByUserIdAndEnableOrderByDateDesc(user.getId(), true);
+        return eventRepository.findTop12ByUserIdAndActiveTrueOrderByDateDesc(user.getId());
 
-        return ldtList;
     }
 
     public String getEvents(Integer id) {

@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "event")
 public class Event {
 
     @Id
@@ -23,6 +22,6 @@ public class Event {
     @JoinColumn(name = "user_id")
     User user;
 
-    private boolean enable = true;
+    private boolean active = true;
 
 }
