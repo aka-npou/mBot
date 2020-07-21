@@ -1,4 +1,4 @@
-package aka_npou.mBot;
+package aka_npou.mBot.PingPong;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +13,8 @@ import java.net.URL;
 @Service
 @Getter
 @Setter
-public class CheckService {
-    @Value("https://www.google.com")
+public class PingService {
+    @Value("https://aka-npou-ping-pong.herokuapp.com/ping")
     private String url;
 
     @Scheduled(fixedRateString = "1200000")
@@ -23,8 +23,7 @@ public class CheckService {
             URL url = new URL(getUrl());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
-            System.err.println("ping");
-            System.err.printf("\n %s %s", url.getHost(),  connection.getResponseCode());
+            System.err.printf("ping %s\n", connection.getResponseCode());
             connection.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
