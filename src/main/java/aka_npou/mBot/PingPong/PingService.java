@@ -3,7 +3,6 @@ package aka_npou.mBot.PingPong;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,7 +16,7 @@ public class PingService {
     @Value("https://aka-npou-ping-pong.herokuapp.com/ping")
     private String url;
 
-    @Scheduled(fixedRateString = "1200000")
+    //@Scheduled(fixedRateString = "1200000")
     public void pingMe() {
         try {
             URL url = new URL(getUrl());
