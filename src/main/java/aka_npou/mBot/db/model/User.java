@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,15 @@ public class User {
     private long id;
 
     private int chatId;
+
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "username")
+    private String username;
+    @Column(name = "change_date")
+    private LocalDateTime changeDate;
 
     @OneToMany
     @JoinColumn(name = "user_id")

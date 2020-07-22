@@ -1,5 +1,6 @@
 package aka_npou.mBot.bot.menu;
 
+import aka_npou.mBot.db.service.BotService;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,9 +16,17 @@ import java.util.List;
 public class ScheduleMenu implements Menu {
     @Getter
     private final BotState botState = BotState.SCHEDULE_MENU;
+    private final BotService botService;
+
+    public ScheduleMenu(BotService botService) {
+        this.botService = botService;
+    }
 
     @Override
     public SendMessage getBotApiMethod(Update update, SendMessage message) {
+        String schedule = botService.getEvents(update.getMessage().getFrom());
+        message.setText("график\n" + schedule);
+
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);

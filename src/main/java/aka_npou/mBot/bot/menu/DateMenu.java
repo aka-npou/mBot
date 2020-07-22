@@ -28,6 +28,8 @@ public class DateMenu implements Menu{
 
     @Override
     public SendMessage getBotApiMethod(Update update, SendMessage message) {
+        message.setText("укажите дату");
+
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
@@ -83,7 +85,7 @@ public class DateMenu implements Menu{
                                 .withDayOfMonth(Integer.parseInt(sDate[0]))
                                 .withMonth(Integer.parseInt(sDate[1]));
 
-                        User user = botService.getUser(update.getMessage().getFrom().getId());
+                        User user = botService.getUser(update.getMessage().getFrom());
 
                         Event event = new Event();
                         event.setUser(user);
@@ -101,7 +103,7 @@ public class DateMenu implements Menu{
                         String[] sDate = text.split("\\.");
                         LocalDateTime date = LocalDateTime.of(Integer.parseInt(sDate[2]), Integer.parseInt(sDate[1]), Integer.parseInt(sDate[0]), 0, 0, 0);
 
-                        User user = botService.getUser(update.getMessage().getFrom().getId());
+                        User user = botService.getUser(update.getMessage().getFrom());
 
                         Event event = new Event();
                         event.setUser(user);

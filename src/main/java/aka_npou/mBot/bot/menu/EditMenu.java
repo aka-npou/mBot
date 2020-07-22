@@ -31,7 +31,7 @@ public class EditMenu implements Menu {
 
     @Override
     public SendMessage getBotApiMethod(Update update, SendMessage message) {
-        String elements = botService.getEditEvents(update.getMessage().getFrom().getId(), shift, map);
+        String elements = botService.getEditEvents(update.getMessage().getFrom(), shift, map);
         message.setText(elements);
 
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();

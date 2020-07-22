@@ -28,16 +28,16 @@ public class BotService {
             eventRepository.save(event);
     }
 
-    public List<Event> getLast12Events(Integer id) {
-        User user = getUser(id);
+    public List<Event> getLast12Events(org.telegram.telegrambots.meta.api.objects.User user) {
+        User userBD = getUser(user);
 
-        return eventRepository.findTop12ByUserIdAndActiveTrueOrderByDateDesc(user.getId());
+        return eventRepository.findTop12ByUserIdAndActiveTrueOrderByDateDesc(userBD.getId());
 
     }
 
-    public String getEvents(Integer id) {
+    public String getEvents(org.telegram.telegrambots.meta.api.objects.User user) {
 
-        List<Event> ldtList = getLast12Events(id);
+        List<Event> ldtList = getLast12Events(user);
 
         StringBuilder sb = new StringBuilder();
 
@@ -81,22 +81,49 @@ public class BotService {
         userRepository.save(user);
     }
 
-    public User getUser(Integer id) {
-        User user = userRepository.findByChatId(id);
-
-        if (user == null) {
-            user = new User();
-            user.setChatId(id);
-            addUser(user);
-        }
-
-        return user;
+    public void updateUser(User user) {
+        userRepository.update(user.getId(),
+                              user.getChangeDate(),
+                              user.getFirstName(),
+                              user.getLastName(),
+                              user.getUsername());
     }
 
-    public List<Event> getShiftEvents(Integer id, int shift) {
-        User user = getUser(id);
+    public User getUser(org.telegram.telegrambots.meta.api.objects.User user) {
+        User userBD = userRepository.findByChatId(user.getId());
 
-        List<Event> ldtList = eventRepository.getPart(user.getId());
+        if (userBD == null) {
+            userBD = new User();
+            userBD.setChatId(user.getId());
+            setNames(userBD, user);
+            userBD.setChangeDate(LocalDateTime.now());
+            addUser(userBD);
+        }
+
+        int days = (int) ((LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()
+                - userBD.getChangeDate().atZone(ZoneId.systemDefault()).toEpochSecond())
+                / 60 / 60 / 24);
+
+        System.err.println("days " + days);
+        if (days > 30) {
+            setNames(userBD, user);
+            userBD.setChangeDate(LocalDateTime.now());
+            updateUser(userBD);
+        }
+
+        return userBD;
+    }
+
+    private void setNames(User userBD, org.telegram.telegrambots.meta.api.objects.User user) {
+        userBD.setFirstName(user.getFirstName()==null?"":user.getFirstName());
+        userBD.setLastName(user.getLastName()==null?"":user.getLastName());
+        userBD.setUsername(user.getUserName()==null?"":user.getUserName());
+    }
+
+    public List<Event> getShiftEvents(org.telegram.telegrambots.meta.api.objects.User user, int shift) {
+        User userBD = getUser(user);
+
+        List<Event> ldtList = eventRepository.getPart(userBD.getId());
 
         List<Event> ldtListPart = new ArrayList<>();
 
@@ -118,8 +145,8 @@ public class BotService {
         return ldtListPart;
     }
 
-    public String getEditEvents(Integer id, int shift, Map<Integer, Long> map) {
-        List<Event> ldtList = getShiftEvents(id, shift);
+    public String getEditEvents(org.telegram.telegrambots.meta.api.objects.User user, int shift, Map<Integer, Long> map) {
+        List<Event> ldtList = getShiftEvents(user, shift);
 
         StringBuilder sb = new StringBuilder();
 

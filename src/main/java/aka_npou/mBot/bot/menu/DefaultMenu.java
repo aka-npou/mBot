@@ -78,13 +78,10 @@ public class DefaultMenu implements Menu{
                 break;
             }
             case ("указать дату"): {
-                message.setText("укажите дату");
                 botState = BotState.DATE_MENU;
                 break;
             }
             case ("график"): {
-                String schedule = botService.getEvents(update.getMessage().getFrom().getId());
-                message.setText("график\n" + schedule);
                 botState = BotState.SCHEDULE_MENU;
                 break;
             }
@@ -103,7 +100,7 @@ public class DefaultMenu implements Menu{
     }
 
     private Event getEvent(Update update, int minusDays) {
-        User user = botService.getUser(update.getMessage().getFrom().getId());
+        User user = botService.getUser(update.getMessage().getFrom());
 
         Event event = new Event();
         event.setUser(user);
