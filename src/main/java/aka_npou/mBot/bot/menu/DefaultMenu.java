@@ -58,7 +58,7 @@ public class DefaultMenu implements Menu{
     }
 
     @Override
-    public BotState Execute(Update update, SendMessage message) {
+    public BotState Execute(Update update, SendMessage message, User user) {
         BotState botState = BotState.DEFAULT_MENU;
         String text = update.getMessage().getText();
 
@@ -66,14 +66,14 @@ public class DefaultMenu implements Menu{
             case ("вчера"): {
                 message.setText("записано событие");
 
-                Event event = getEvent(update, 1);
+                Event event = getEvent(update, 1, user);
                 botService.addEvent(event);
                 break;
             }
             case ("сегодня"): {
                 message.setText("записано событие");
 
-                Event event = getEvent(update, 0);
+                Event event = getEvent(update, 0, user);
                 botService.addEvent(event);
                 break;
             }
@@ -99,8 +99,8 @@ public class DefaultMenu implements Menu{
         return botState;
     }
 
-    private Event getEvent(Update update, int minusDays) {
-        User user = botService.getUser(update.getMessage().getFrom());
+    private Event getEvent(Update update, int minusDays, User user) {
+        //User user = botService.getUser(update.getMessage().getFrom());
 
         Event event = new Event();
         event.setUser(user);

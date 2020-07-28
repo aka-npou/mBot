@@ -1,5 +1,6 @@
 package aka_npou.mBot.db.service;
 
+import aka_npou.mBot.bot.Cache;
 import aka_npou.mBot.db.model.Event;
 import aka_npou.mBot.db.model.User;
 import aka_npou.mBot.db.repository.EventRepository;
@@ -16,10 +17,12 @@ import java.util.Map;
 public class BotService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final Cache cache;
 
-    public BotService(UserRepository userRepository, EventRepository eventRepository) {
+    public BotService(UserRepository userRepository, EventRepository eventRepository, Cache cache) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
+        this.cache = cache;
     }
 
     public void addEvent(Event event) {
@@ -87,10 +90,17 @@ public class BotService {
                               user.getFirstName(),
                               user.getLastName(),
                               user.getUsername());
+
+        cache.setUser(user.getChatId(), user);
     }
 
     public User getUser(org.telegram.telegrambots.meta.api.objects.User user) {
-        User userBD = userRepository.findByChatId(user.getId());
+        User userBD = cache.getUser(user.getId());
+        if (userBD == null) {
+            System.err.println("add cache user");
+            userBD = userRepository.findByChatId(user.getId());
+            cache.setUser(user.getId(), userBD);
+        }
 
         if (userBD == null) {
             userBD = new User();
@@ -98,6 +108,7 @@ public class BotService {
             setNames(userBD, user);
             userBD.setChangeDate(LocalDateTime.now());
             addUser(userBD);
+            cache.setUser(user.getId(), userBD);
         }
 
         int days = (int) ((LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()

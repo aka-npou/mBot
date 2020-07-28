@@ -1,5 +1,6 @@
 package aka_npou.mBot.bot.menu;
 
+import aka_npou.mBot.db.model.User;
 import aka_npou.mBot.db.service.BotService;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,7 +59,7 @@ public class EditMenu implements Menu {
     }
 
     @Override
-    public BotState Execute(Update update, SendMessage message) {
+    public BotState Execute(Update update, SendMessage message, User user) {
         BotState botState = BotState.DEFAULT_MENU;
         String text = update.getMessage().getText();
 

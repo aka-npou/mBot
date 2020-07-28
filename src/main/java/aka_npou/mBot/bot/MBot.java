@@ -4,6 +4,8 @@ import aka_npou.mBot.bot.menu.BotState;
 import aka_npou.mBot.bot.menu.EditMenu;
 import aka_npou.mBot.bot.menu.Menu;
 import aka_npou.mBot.bot.menu.MenuFactory;
+import aka_npou.mBot.db.model.User;
+import aka_npou.mBot.db.service.BotService;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ public class MBot extends TelegramWebhookBot {
     private Cache cache;
     @Autowired
     private MenuFactory menuFactory;
+    @Autowired
+    private BotService botService;
 
     @Override
     public String getBotToken() {
@@ -43,10 +47,12 @@ public class MBot extends TelegramWebhookBot {
     }
 
     private BotApiMethod<?> getMessage(Menu menu, Update update) {
+        User user = botService.getUser(update.getMessage().getFrom());
+
         SendMessage message = new SendMessage();
         message.setChatId(update.getMessage().getChatId());
 
-        BotState newBotState = menu.Execute(update, message);
+        BotState newBotState = menu.Execute(update, message, user);
 
         cache.setState(update.getMessage().getFrom().getId(), newBotState);
 
