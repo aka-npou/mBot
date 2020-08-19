@@ -44,6 +44,7 @@ public class DefaultMenu implements Menu{
         row1.add(new KeyboardButton("сегодня"));
         row2.add(new KeyboardButton("указать дату"));
         row3.add(new KeyboardButton("график"));
+        row3.add(new KeyboardButton("планируемая дата"));
         row4.add(new KeyboardButton("редактировать"));
 
         keyboard.add(row1);
@@ -89,6 +90,11 @@ public class DefaultMenu implements Menu{
                 /*String elements = botService.getEditEvents(update.getMessage().getFrom().getId(), 0);
                 message.setText(elements);*/
                 botState = BotState.EDIT_MENU;
+                break;
+            }
+            case ("планируемая дата"): {
+                String textDate = botService.getFutureDate(update.getMessage().getFrom());
+                message.setText("планируемая дата: " + textDate);
                 break;
             }
             default: {

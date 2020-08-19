@@ -189,4 +189,49 @@ public class BotService {
         System.err.println("eventId " + eventId);
         eventRepository.disableEvent(eventId);
     }
+
+    public String getFutureDate(org.telegram.telegrambots.meta.api.objects.User user) {
+        List<Event> ldtList = getLast12Events(user);
+
+        int allDays = 0;
+        int count = 0;
+
+        LocalDateTime lastDate = null;
+        LocalDateTime firstDate = null;
+        for (Event event:ldtList) {
+            if (firstDate == null) {
+                firstDate = event.getDate();
+            }
+            if (lastDate != null) {
+                int days = (int) ((lastDate.atZone(ZoneId.systemDefault()).toEpochSecond()
+                        - event.getDate().atZone(ZoneId.systemDefault()).toEpochSecond())
+                        / 60 / 60 / 24);
+
+                allDays += days;
+                count++;
+
+            }
+
+            lastDate = event.getDate();
+        }
+
+        if (count == 0) {
+            return "нет данных для анализа";
+        }
+
+        int avgDays = allDays / count;
+        LocalDateTime futureDate = firstDate.plusDays(avgDays);
+
+        return String.format("%02d.%02d.%d(%02d.%02d.%d + %dд)",
+                futureDate.getDayOfMonth(),
+                futureDate.getMonthValue(),
+                futureDate.getYear(),
+
+                firstDate.getDayOfMonth(),
+                firstDate.getMonthValue(),
+                firstDate.getYear(),
+
+                avgDays);
+
+    }
 }
